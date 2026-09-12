@@ -4,9 +4,9 @@ This repository hosts a static GitHub Pages interface for uploading assets to th
 
 ## Uploading assets
 
-Open the published GitHub Pages site, create a fine-grained GitHub personal access token restricted to this repository with **Contents: Read and write**, paste it into the page, select one or more files, and choose **Upload files and create links**. The page uploads files directly to GitHub and presents the original `browser_download_url` for each file.
+Open the published GitHub Pages site, create a fine-grained GitHub personal access token restricted to this repository with **Contents: Read and write**, paste it into the page, select one or more files, and choose **Upload files and create links**. The page sends the upload through the `downloaders-custom-download` Worker because GitHub's release-upload endpoint does not permit browser cross-origin uploads. The Worker forwards the file and authorization header directly to GitHub and presents the original `browser_download_url` for each file.
 
-The access token is used only in the current browser page while the upload request runs. The site does not save it in the repository, local storage, or cookies.
+The access token is used only while the upload request runs. The page does not save it in the repository, local storage, or cookies, and the Worker does not store it.
 
 ## Custom download links
 

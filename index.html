@@ -326,7 +326,7 @@
 
     async function uploadOne(file, token, position, total) {
       setStatus(`جارٍ رفع ${file.name} (${position}/${total})…`);
-      const uploadUrl = release.upload_url.replace('{?name,label}', `?name=${encodeURIComponent(file.name)}`);
+      const uploadUrl = `${PROXY_BASE}/upload?name=${encodeURIComponent(file.name)}`;
       const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
