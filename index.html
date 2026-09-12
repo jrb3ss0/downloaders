@@ -104,6 +104,21 @@
     .url-row code { flex: 1; overflow: hidden; padding: 8px; border-radius: 6px; color: #b9dcff; background: #07101d; direction: ltr; font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
     .copy { flex: 0 0 auto; border: 1px solid #41638f; border-radius: 6px; padding: 0 10px; color: #dceafe; background: #13233a; cursor: pointer; font: 12px Tahoma, Arial, sans-serif; }
     .copy:hover { border-color: var(--blue); }
+    .custom-link { margin-top: 13px; padding: 12px; border: 1px solid rgba(89, 164, 255, .28); border-radius: 8px; background: rgba(33, 73, 121, .13); }
+    .custom-link h4 { margin: 0 0 10px; color: #cce4ff; font-size: 13px; }
+    .custom-fields { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+    .custom-fields label, .custom-random label { margin-bottom: 4px; color: var(--muted); font-size: 11px; font-weight: normal; }
+    .custom-link input[type="text"], .custom-link input[type="number"] { min-height: 37px; padding: 7px 9px; border-color: #3b5277; border-radius: 7px; background: #0a1423; color: var(--text); font: 13px Tahoma, Arial, sans-serif; }
+    .custom-link input[type="text"] { direction: ltr; text-align: left; }
+    .custom-link input[type="number"] { width: 64px; direction: ltr; }
+    .extension { display: block; max-width: 120px; overflow: hidden; color: #9dbbe2; direction: ltr; font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .custom-random { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-top: 10px; }
+    .check-label { display: flex; align-items: center; gap: 7px; margin: 0 !important; color: #d9e5f7 !important; cursor: pointer; }
+    .check-label input { accent-color: var(--blue); }
+    .make-link { min-height: 35px; margin-top: 11px; border: 1px solid #4c76aa; border-radius: 7px; padding: 0 11px; color: #dceafe; background: #173052; cursor: pointer; font: 12px Tahoma, Arial, sans-serif; }
+    .make-link:hover { border-color: var(--blue); background: #1b3b65; }
+    .custom-output { margin-top: 10px; }
+    .custom-output p { margin: 0 0 5px; color: #a9d9be; font-size: 11px; }
 
     .side { display: grid; gap: 20px; }
     .side-card { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: rgba(18, 27, 45, .74); }
@@ -222,6 +237,7 @@
     const REPO = 'downloaders';
     const TAG = 'downloads';
     const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`;
+    const PROXY_BASE = 'https://downloaders-custom-download.secure-link-tracker-a8x7.workers.dev';
 
     const tokenInput = document.querySelector('#token');
     const filesInput = document.querySelector('#files');
@@ -258,9 +274,25 @@
     function renderAssets(assets) {
       assetList.innerHTML = assets.map(asset => {
         const url = asset.browser_download_url;
+        const dot = asset.name.lastIndexOf('.');
+        const baseName = dot > 0 ? asset.name.slice(0, dot) : asset.name;
+        const extension = dot > 0 ? asset.name.slice(dot) : '';
         return `<article class="asset">
           <div class="asset-name"><strong title="${escapeHtml(asset.name)}">${escapeHtml(asset.name)}</strong><small>${formatBytes(asset.size)}</small></div>
           <div class="url-row"><code title="${escapeHtml(url)}">${escapeHtml(url)}</code><button class="copy" type="button" data-copy="${escapeHtml(url)}">نسخ</button></div>
+          <section class="custom-link">
+            <h4>رابط تنزيل باسم مخصص</h4>
+            <div class="custom-fields">
+              <div><label>اسم الملف عند التنزيل</label><input class="custom-name" type="text" value="${escapeHtml(baseName)}" maxlength="160" aria-label="اسم الملف عند التنزيل"></div>
+              <div><label>الامتداد</label><span class="extension">${escapeHtml(extension || 'بدون امتداد')}</span></div>
+            </div>
+            <div class="custom-random">
+              <label class="check-label"><input class="random-toggle" type="checkbox"> أضف أرقامًا عشوائية عند كل تنزيل</label>
+              <div><label>عدد الأرقام</label><input class="random-digits" type="number" min="1" max="20" value="5" disabled aria-label="عدد الأرقام العشوائية"></div>
+            </div>
+            <button class="make-link" type="button" data-create-link>إنشاء رابط التنزيل المخصص</button>
+            <div class="custom-output" hidden><p class="custom-description"></p><div class="url-row"><code class="custom-url"></code><button class="copy" type="button" data-copy="">نسخ</button></div></div>
+          </section>
         </article>`;
       }).join('');
       resultEmpty.hidden = assets.length > 0;
@@ -316,6 +348,34 @@
     function setBusy(isBusy) {
       uploadButton.disabled = isBusy;
       uploadButton.textContent = isBusy ? 'جارٍ الرفع…' : 'رفع الملفات وإنشاء الروابط';
+    }
+
+    function createCustomDownloadLink(button) {
+      const asset = button.closest('.asset');
+      const assetName = asset.querySelector('.asset-name strong').textContent;
+      const extension = asset.querySelector('.extension').textContent;
+      const defaultBaseName = extension === 'بدون امتداد' ? assetName : assetName.slice(0, -extension.length);
+      const baseName = asset.querySelector('.custom-name').value.trim() || defaultBaseName;
+      const addRandom = asset.querySelector('.random-toggle').checked;
+      const digitInput = asset.querySelector('.random-digits');
+      const digits = Math.min(20, Math.max(1, Number.parseInt(digitInput.value, 10) || 5));
+      digitInput.value = digits;
+
+      const customUrl = new URL(PROXY_BASE);
+      customUrl.searchParams.set('asset', assetName);
+      customUrl.searchParams.set('name', baseName);
+      if (addRandom) customUrl.searchParams.set('digits', digits);
+
+      const output = asset.querySelector('.custom-output');
+      const urlField = output.querySelector('.custom-url');
+      const copyButton = output.querySelector('[data-copy]');
+      urlField.textContent = customUrl.toString();
+      urlField.title = customUrl.toString();
+      copyButton.dataset.copy = customUrl.toString();
+      output.querySelector('.custom-description').textContent = addRandom
+        ? `عند كل زيارة للرابط، سيتم تنزيل الملف باسم ${baseName} ثم ${digits} أرقام عشوائية${extension === 'بدون امتداد' ? '' : ` ثم ${extension}`}.`
+        : `سيتم تنزيل الملف باسم ${baseName}${extension === 'بدون امتداد' ? '' : extension}.`;
+      output.hidden = false;
     }
 
     async function uploadFiles() {
@@ -374,7 +434,17 @@
     });
 
     uploadButton.addEventListener('click', uploadFiles);
+    assetList.addEventListener('change', event => {
+      if (!event.target.matches('.random-toggle')) return;
+      const asset = event.target.closest('.asset');
+      asset.querySelector('.random-digits').disabled = !event.target.checked;
+    });
     assetList.addEventListener('click', async event => {
+      const createButton = event.target.closest('[data-create-link]');
+      if (createButton) {
+        createCustomDownloadLink(createButton);
+        return;
+      }
       const button = event.target.closest('[data-copy]');
       if (!button) return;
       const url = button.dataset.copy;
