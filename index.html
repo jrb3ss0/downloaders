@@ -3,233 +3,246 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="واجهة آمنة لرفع الملفات إلى إصدار GitHub downloads والحصول على روابط تنزيل مباشرة.">
-  <title>Downloaders | رفع ملفات</title>
+  <meta name="description" content="رفع الملفات إلى GitHub Releases وإنشاء روابط تنزيل باسم مخصص.">
+  <title>Downloaders — مركز الملفات</title>
   <style>
     :root {
-      --navy: #0b1220;
-      --surface: #121b2d;
-      --surface-2: #18243a;
-      --line: #2c3b57;
-      --text: #f5f7fb;
-      --muted: #9ba9c1;
-      --blue: #59a4ff;
-      --blue-deep: #1976d2;
-      --green: #36c98c;
-      --amber: #f7c95c;
-      --red: #ff6b78;
-      --shadow: 0 28px 70px rgba(0, 0, 0, .28);
+      --ink: #12213d;
+      --body: #50617d;
+      --paper: #ffffff;
+      --canvas: #f5f8fd;
+      --line: #e1e8f3;
+      --soft-blue: #edf5ff;
+      --blue: #246bfe;
+      --blue-dark: #1553d7;
+      --green: #17a673;
+      --green-soft: #eaf9f2;
+      --red: #d9435b;
+      --shadow: 0 24px 70px rgba(44, 72, 125, .12);
+      --radius-lg: 24px;
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      min-height: 100vh;
       margin: 0;
-      color: var(--text);
+      min-height: 100vh;
+      color: var(--ink);
       background:
-        radial-gradient(circle at 12% 0%, rgba(55, 126, 205, .22), transparent 31rem),
-        radial-gradient(circle at 90% 20%, rgba(54, 201, 140, .11), transparent 27rem),
-        var(--navy);
+        radial-gradient(circle at 93% -5%, rgba(69, 137, 255, .20), transparent 29rem),
+        radial-gradient(circle at -4% 45%, rgba(99, 202, 169, .10), transparent 25rem),
+        var(--canvas);
       font-family: Tahoma, Arial, sans-serif;
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
-    .shell { width: min(1080px, calc(100% - 32px)); margin: 0 auto; }
-    header { padding: 28px 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
-    .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(145deg, var(--blue), #7859ff); box-shadow: 0 10px 25px rgba(89, 164, 255, .25); font-size: 22px; }
-    .brand strong { display: block; font-size: 17px; letter-spacing: -.3px; }
-    .brand small { color: var(--muted); }
-    .repo-link { color: var(--muted); text-decoration: none; font-size: 14px; border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; transition: .2s; }
-    .repo-link:hover { color: var(--text); border-color: var(--blue); }
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .container { width: min(1140px, calc(100% - 36px)); margin: auto; }
 
-    .hero { padding: 48px 0 34px; text-align: center; }
-    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; margin-bottom: 16px; border: 1px solid rgba(89, 164, 255, .38); border-radius: 999px; color: #cce4ff; background: rgba(54, 108, 170, .14); font-size: 13px; }
-    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(54, 201, 140, .14); }
-    h1 { margin: 0; font-size: clamp(30px, 5vw, 48px); letter-spacing: -1px; line-height: 1.15; }
-    .hero p { max-width: 635px; margin: 16px auto 0; color: var(--muted); font-size: 17px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 23px 0; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+    .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: #fff; background: linear-gradient(145deg, #427ffc, #2255d8); box-shadow: 0 10px 22px rgba(36, 107, 254, .26); font-size: 21px; font-weight: bold; }
+    .brand-name { display: block; font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
+    .brand-subtitle { display: block; color: #7888a1; font-size: 11px; letter-spacing: .2px; }
+    .release-link { display: inline-flex; align-items: center; gap: 7px; min-height: 39px; padding: 0 13px; border: 1px solid var(--line); border-radius: 10px; color: #49607e; background: rgba(255,255,255,.7); text-decoration: none; font-size: 13px; transition: .2s; }
+    .release-link:hover { color: var(--blue); border-color: #a8c7ff; background: #fff; }
 
-    .grid { display: grid; grid-template-columns: 1.42fr .88fr; gap: 20px; align-items: start; padding-bottom: 26px; }
-    .card { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: rgba(18, 27, 45, .9); box-shadow: var(--shadow); }
-    .card-head { padding: 22px 24px 16px; border-bottom: 1px solid var(--line); }
-    .card-head h2 { margin: 0; font-size: 19px; }
-    .card-head p { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
-    .form-body { padding: 22px 24px 24px; }
+    .hero { padding: 42px 0 46px; text-align: center; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; padding: 7px 12px; border: 1px solid #cae5d8; border-radius: 99px; color: #237353; background: rgba(234, 249, 242, .86); font-size: 12px; font-weight: bold; }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(23,166,115,.12); }
+    h1 { max-width: 770px; margin: 0 auto; color: #0e1d38; font-size: clamp(32px, 5vw, 51px); letter-spacing: -1.5px; line-height: 1.18; }
+    .hero p { max-width: 600px; margin: 15px auto 0; color: var(--body); font-size: clamp(14px, 2vw, 17px); }
+    .hero strong { color: var(--blue); }
 
-    label { display: block; margin: 0 0 8px; font-weight: bold; font-size: 14px; }
-    .hint { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
-    .field { margin-bottom: 20px; }
-    .input-wrap { position: relative; }
-    input[type="password"], input[type="text"] { width: 100%; min-height: 46px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: #0c1423; color: var(--text); padding: 10px 50px 10px 13px; font: inherit; direction: ltr; text-align: left; transition: .2s; }
-    input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(89, 164, 255, .14); }
-    .show-token { position: absolute; inset: 6px auto 6px 6px; border: 0; border-radius: 7px; color: var(--muted); background: transparent; cursor: pointer; padding: 0 10px; font: inherit; font-size: 12px; }
-    .show-token:hover { color: var(--text); background: var(--surface-2); }
+    .app-grid { display: grid; grid-template-columns: minmax(0, 1.48fr) minmax(275px, .72fr); gap: 22px; align-items: start; padding-bottom: 30px; }
+    .card { border: 1px solid rgba(221, 229, 241, .95); border-radius: var(--radius-lg); background: rgba(255,255,255,.93); box-shadow: var(--shadow); }
+    .upload-card { overflow: hidden; }
+    .card-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding: 25px 28px 20px; border-bottom: 1px solid var(--line); }
+    .title-group { display: flex; gap: 13px; align-items: center; }
+    .title-icon { display: grid; place-items: center; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; color: #276aff; background: #edf4ff; font-size: 20px; }
+    .card-title h2 { margin: 0; font-size: 18px; letter-spacing: -.2px; }
+    .card-title p { margin: 2px 0 0; color: #73839d; font-size: 12px; }
+    .target { margin-top: 2px; padding: 5px 9px; border: 1px solid #dce9fb; border-radius: 8px; color: #5180c8; background: #f6faff; direction: ltr; font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+    .form { padding: 26px 28px 28px; }
 
-    .drop-zone { position: relative; display: grid; place-items: center; min-height: 150px; padding: 24px; border: 1.5px dashed #46638e; border-radius: 13px; color: var(--muted); background: rgba(38, 65, 101, .1); text-align: center; cursor: pointer; transition: .2s; }
-    .drop-zone:hover, .drop-zone.is-dragging { border-color: var(--blue); background: rgba(89, 164, 255, .12); }
-    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    .drop-icon { color: var(--blue); font-size: 31px; line-height: 1; }
-    .drop-zone strong { display: block; margin-top: 8px; color: var(--text); }
-    .drop-zone span { display: block; margin-top: 4px; font-size: 13px; }
-    .file-list { margin: 12px 0 0; padding: 0; list-style: none; }
+    .field { margin-bottom: 21px; }
+    .field-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    label { color: #233653; font-size: 13px; font-weight: bold; }
+    .field-note { color: #8390a7; font-size: 11px; }
+    .token-box { position: relative; }
+    input[type="password"], input[type="text"] { width: 100%; height: 48px; border: 1px solid #d7e1ef; border-radius: 11px; outline: 0; color: var(--ink); background: #fbfcff; padding: 0 14px 0 60px; direction: ltr; text-align: left; font-size: 14px; transition: border .2s, box-shadow .2s, background .2s; }
+    input:focus { border-color: #7ca7fd; background: #fff; box-shadow: 0 0 0 4px rgba(36, 107, 254, .10); }
+    .show-token { position: absolute; top: 6px; bottom: 6px; left: 6px; border: 0; border-radius: 8px; color: #54719a; background: #edf3fc; cursor: pointer; padding: 0 10px; font-size: 11px; transition: .2s; }
+    .show-token:hover { color: var(--blue); background: #e4efff; }
+    .security-line { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; color: #70809a; font-size: 11px; }
+    .security-line span { color: var(--green); font-size: 13px; }
+
+    .drop-zone { position: relative; display: grid; place-items: center; min-height: 174px; padding: 24px; border: 1.5px dashed #a8bee0; border-radius: var(--radius); background: linear-gradient(135deg, #fafcff, #f4f8ff); text-align: center; cursor: pointer; transition: .2s; }
+    .drop-zone:hover, .drop-zone.is-dragging { border-color: var(--blue); background: #f0f6ff; box-shadow: inset 0 0 0 3px rgba(36, 107, 254, .05); }
+    .drop-zone input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+    .drop-symbol { display: grid; place-items: center; width: 47px; height: 47px; margin: 0 auto 10px; border-radius: 50%; color: var(--blue); background: #eaf3ff; font-size: 24px; font-weight: bold; }
+    .drop-zone strong { display: block; color: #203451; font-size: 14px; }
+    .drop-zone small { display: block; margin-top: 4px; color: #7e8ea7; font-size: 12px; }
+    .file-list { display: grid; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
     .file-list:empty { display: none; }
-    .file-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; padding: 9px 11px; border-radius: 8px; background: var(--surface-2); font-size: 13px; }
+    .file-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 11px; border: 1px solid #e3eaf5; border-radius: 10px; color: #3c4e69; background: #fafcff; font-size: 12px; }
     .file-list span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .file-list small { flex: 0 0 auto; color: var(--muted); direction: ltr; }
+    .file-list small { flex: 0 0 auto; color: #8794a9; direction: ltr; }
 
-    .actions { display: flex; align-items: center; gap: 12px; margin-top: 21px; }
-    .primary { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; border: 0; border-radius: 10px; padding: 0 18px; color: #061321; background: linear-gradient(135deg, #7fc1ff, #55d7a0); cursor: pointer; font: bold 15px Tahoma, Arial, sans-serif; transition: transform .15s, opacity .15s; }
-    .primary:hover { transform: translateY(-1px); }
-    .primary:disabled { cursor: wait; opacity: .6; transform: none; }
-    .status { min-height: 22px; color: var(--muted); font-size: 13px; }
-    .status.error { color: #ffadb5; }
-    .status.success { color: #82edbd; }
+    .submit-row { display: flex; align-items: center; gap: 13px; margin-top: 22px; }
+    .upload-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 47px; border: 0; border-radius: 11px; padding: 0 19px; color: #fff; background: linear-gradient(135deg, #286eff, #215ce6); box-shadow: 0 10px 20px rgba(36,107,254,.22); cursor: pointer; font-size: 14px; font-weight: bold; transition: transform .15s, box-shadow .15s, opacity .15s; }
+    .upload-button:hover { transform: translateY(-1px); box-shadow: 0 14px 24px rgba(36,107,254,.27); }
+    .upload-button:disabled { cursor: wait; opacity: .65; transform: none; box-shadow: none; }
+    .status { min-height: 20px; color: #7888a2; font-size: 12px; }
+    .status.success { color: #16865c; }
+    .status.error { color: var(--red); }
 
-    .release-pill { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; padding: 11px 12px; border: 1px solid rgba(54, 201, 140, .3); border-radius: 10px; background: rgba(54, 201, 140, .08); }
-    .release-pill div { font-size: 13px; }
-    .release-pill strong { display: block; color: #9bf4c8; }
-    .release-pill a { color: #b9dcff; font-size: 12px; text-decoration: none; }
+    .assets { border-top: 1px solid var(--line); padding: 23px 28px 27px; background: linear-gradient(180deg, rgba(246,249,254,.55), rgba(255,255,255,.5)); }
+    .assets-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .assets-header h3 { margin: 0; font-size: 15px; }
+    .asset-count { color: #8594a9; font-size: 11px; }
+    .asset-list { display: grid; gap: 11px; margin-top: 15px; }
+    .empty { margin: 14px 0 0; padding: 17px; border: 1px dashed #d8e2ef; border-radius: 12px; color: #8290a5; background: rgba(255,255,255,.7); text-align: center; font-size: 12px; }
 
-    .results { border-top: 1px solid var(--line); padding: 19px 24px 23px; background: rgba(5, 11, 22, .25); }
-    .results-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
-    .results h3 { margin: 0; font-size: 15px; }
-    .results small { color: var(--muted); }
-    .result-empty { margin: 12px 0 0; color: var(--muted); font-size: 13px; }
-    .asset-list { display: grid; gap: 10px; margin-top: 13px; }
-    .asset { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: #0d1626; }
-    .asset-name { display: flex; justify-content: space-between; gap: 12px; align-items: center; font-size: 14px; }
-    .asset-name strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .asset-name small { color: var(--muted); direction: ltr; white-space: nowrap; }
-    .url-row { display: flex; gap: 7px; margin-top: 9px; }
-    .url-row code { flex: 1; overflow: hidden; padding: 8px; border-radius: 6px; color: #b9dcff; background: #07101d; direction: ltr; font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
-    .copy { flex: 0 0 auto; border: 1px solid #41638f; border-radius: 6px; padding: 0 10px; color: #dceafe; background: #13233a; cursor: pointer; font: 12px Tahoma, Arial, sans-serif; }
-    .copy:hover { border-color: var(--blue); }
-    .custom-link { margin-top: 13px; padding: 12px; border: 1px solid rgba(89, 164, 255, .28); border-radius: 8px; background: rgba(33, 73, 121, .13); }
-    .custom-link h4 { margin: 0 0 10px; color: #cce4ff; font-size: 13px; }
-    .custom-fields { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
-    .custom-fields label, .custom-random label { margin-bottom: 4px; color: var(--muted); font-size: 11px; font-weight: normal; }
-    .custom-link input[type="text"], .custom-link input[type="number"] { min-height: 37px; padding: 7px 9px; border-color: #3b5277; border-radius: 7px; background: #0a1423; color: var(--text); font: 13px Tahoma, Arial, sans-serif; }
-    .custom-link input[type="text"] { direction: ltr; text-align: left; }
-    .custom-link input[type="number"] { width: 64px; direction: ltr; }
-    .extension { display: block; max-width: 120px; overflow: hidden; color: #9dbbe2; direction: ltr; font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
-    .custom-random { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-top: 10px; }
-    .check-label { display: flex; align-items: center; gap: 7px; margin: 0 !important; color: #d9e5f7 !important; cursor: pointer; }
-    .check-label input { accent-color: var(--blue); }
-    .make-link { min-height: 35px; margin-top: 11px; border: 1px solid #4c76aa; border-radius: 7px; padding: 0 11px; color: #dceafe; background: #173052; cursor: pointer; font: 12px Tahoma, Arial, sans-serif; }
-    .make-link:hover { border-color: var(--blue); background: #1b3b65; }
-    .custom-output { margin-top: 10px; }
-    .custom-output p { margin: 0 0 5px; color: #a9d9be; font-size: 11px; }
+    .asset { overflow: hidden; border: 1px solid #e1e8f3; border-radius: 14px; background: #fff; }
+    .asset-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 14px 12px; }
+    .asset-name { display: flex; align-items: center; min-width: 0; gap: 9px; }
+    .asset-file-icon { display: grid; place-items: center; width: 31px; height: 31px; flex: 0 0 auto; border-radius: 9px; color: #467bdb; background: #edf4ff; font-size: 16px; }
+    .asset-name strong { overflow: hidden; color: #253957; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .asset-size { flex: 0 0 auto; color: #8795a9; direction: ltr; font-size: 11px; }
+    .direct-link { display: flex; align-items: center; gap: 7px; padding: 0 14px 14px; }
+    .direct-link code, .custom-url { flex: 1; min-width: 0; overflow: hidden; padding: 9px 10px; border: 1px solid #e5ebf4; border-radius: 8px; color: #4772b6; background: #f8faff; direction: ltr; font: 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .copy { height: 35px; flex: 0 0 auto; border: 1px solid #cad8ef; border-radius: 8px; color: #386bc0; background: #fff; cursor: pointer; padding: 0 11px; font-size: 11px; font-weight: bold; transition: .2s; }
+    .copy:hover { border-color: #76a2f3; background: #f4f8ff; }
 
-    .side { display: grid; gap: 20px; }
-    .side-card { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: rgba(18, 27, 45, .74); }
-    .side-card h2 { margin: 0 0 13px; font-size: 17px; }
-    .steps { padding: 0; margin: 0; list-style: none; counter-reset: step; }
-    .steps li { position: relative; padding: 0 37px 17px 0; color: var(--muted); font-size: 14px; counter-increment: step; }
-    .steps li:last-child { padding-bottom: 0; }
-    .steps li::before { content: counter(step); position: absolute; right: 0; top: 1px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #b9dcff; background: #20385a; font-size: 12px; font-weight: bold; }
-    .steps strong { color: var(--text); }
-    .security { border-color: rgba(247, 201, 92, .3); background: rgba(247, 201, 92, .07); }
-    .security p { margin: 0; color: #f5dc9c; font-size: 13px; }
-    .security a { color: #b9dcff; }
-    .notice { margin: 0; color: var(--muted); font-size: 12px; }
+    .custom-link { margin: 0 14px 14px; padding: 14px; border: 1px solid #d8e7ff; border-radius: 11px; background: #f7fbff; }
+    .custom-link h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 12px; color: #2d5f9e; font-size: 12px; }
+    .custom-link h4::before { content: '✦'; color: #568aff; }
+    .custom-fields { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; align-items: end; }
+    .custom-fields label, .random-controls label { display: block; margin: 0 0 5px; color: #74859f; font-size: 10px; font-weight: normal; }
+    .custom-link input[type="text"], .custom-link input[type="number"] { height: 37px; padding: 0 9px; border-color: #d5e1f1; border-radius: 8px; background: #fff; font-size: 12px; }
+    .custom-link input[type="number"] { width: 66px; direction: ltr; }
+    .extension { display: block; max-width: 105px; overflow: hidden; padding: 8px 0; color: #4c73aa; direction: ltr; font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .random-controls { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-top: 11px; }
+    .toggle-label { display: flex !important; align-items: center; gap: 7px; margin: 0 !important; color: #526985 !important; cursor: pointer; font-size: 11px !important; }
+    .toggle-label input { width: 15px; height: 15px; accent-color: var(--blue); }
+    .make-link { min-height: 36px; margin-top: 12px; border: 1px solid #b9d0f8; border-radius: 8px; color: #3065b9; background: #fff; cursor: pointer; padding: 0 12px; font-size: 11px; font-weight: bold; transition: .2s; }
+    .make-link:hover { color: #fff; border-color: var(--blue); background: var(--blue); }
+    .custom-output { margin-top: 12px; }
+    .custom-output p { margin: 0 0 7px; color: #468166; font-size: 10px; }
+    .custom-output .direct-link { padding: 0; }
 
-    footer { padding: 6px 0 32px; color: #74829c; text-align: center; font-size: 12px; }
-    footer a { color: #9cbbe2; }
+    .sidebar { display: grid; gap: 16px; }
+    .side-card { padding: 21px; border: 1px solid rgba(221,229,241,.9); border-radius: var(--radius); background: rgba(255,255,255,.82); }
+    .side-card h2 { margin: 0 0 14px; color: #243957; font-size: 15px; }
+    .step-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; counter-reset: steps; }
+    .step-list li { position: relative; padding-right: 35px; color: #697a94; font-size: 12px; counter-increment: steps; }
+    .step-list li::before { content: counter(steps); position: absolute; right: 0; top: 0; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 8px; color: var(--blue); background: #edf4ff; font-size: 11px; font-weight: bold; }
+    .step-list strong { display: block; margin-bottom: 1px; color: #31455f; font-size: 12px; }
+    .help-link { color: var(--blue); text-decoration: none; font-weight: bold; }
+    .help-link:hover { text-decoration: underline; }
+    .note-card { border-color: #cae9db; background: linear-gradient(140deg, rgba(234,249,242,.95), rgba(255,255,255,.94)); }
+    .note-card h2 { color: #287253; }
+    .note-card p { margin: 0; color: #4f7869; font-size: 12px; }
+    .mini-label { display: inline-block; margin-bottom: 7px; padding: 4px 7px; border-radius: 6px; color: #2a7f5b; background: rgba(255,255,255,.74); font-size: 10px; font-weight: bold; }
+    .specs { display: grid; gap: 9px; margin: 0; }
+    .specs div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid #edf0f6; color: #64758e; font-size: 11px; }
+    .specs div:last-child { padding-bottom: 0; border-bottom: 0; }
+    .specs strong { color: #354a66; direction: ltr; font-weight: bold; }
 
-    @media (max-width: 800px) {
-      header { padding-top: 18px; }
-      .repo-link { display: none; }
-      .hero { padding: 35px 0 28px; }
-      .grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 480px) {
-      .shell { width: min(100% - 22px, 1080px); }
-      .card-head, .form-body, .results, .side-card { padding-right: 16px; padding-left: 16px; }
-      .actions { align-items: flex-start; flex-direction: column; }
-      .primary { width: 100%; }
+    footer { padding: 4px 0 31px; color: #8290a5; text-align: center; font-size: 11px; }
+    footer a { color: #5b7eaf; text-decoration: none; }
+
+    @media (max-width: 850px) { .app-grid { grid-template-columns: 1fr; } .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sidebar .side-card:first-child { grid-row: span 2; } }
+    @media (max-width: 590px) {
+      .container { width: min(100% - 22px, 1140px); }
+      .topbar { padding: 15px 0; }
+      .release-link { font-size: 0; padding: 0; width: 40px; justify-content: center; }
+      .release-link::after { content: '↗'; font-size: 17px; }
+      .hero { padding: 28px 0 31px; }
+      .card-title, .form, .assets { padding-right: 17px; padding-left: 17px; }
+      .target { display: none; }
+      .submit-row { align-items: stretch; flex-direction: column; }
+      .upload-button { width: 100%; }
+      .sidebar { grid-template-columns: 1fr; }
+      .sidebar .side-card:first-child { grid-row: auto; }
+      .custom-fields { grid-template-columns: 1fr auto; }
     }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <header>
+  <main class="container">
+    <header class="topbar">
       <a class="brand" href="https://github.com/jrb3ss0/downloaders" target="_blank" rel="noopener">
         <span class="brand-mark" aria-hidden="true">⇧</span>
-        <span><strong>Downloaders</strong><small>GitHub Release Uploader</small></span>
+        <span><span class="brand-name">Downloaders</span><span class="brand-subtitle">YOUR FILE DELIVERY HUB</span></span>
       </a>
-      <a class="repo-link" href="https://github.com/jrb3ss0/downloaders/releases/tag/downloads" target="_blank" rel="noopener">فتح صفحة الإصدار ↗</a>
+      <a class="release-link" href="https://github.com/jrb3ss0/downloaders/releases/tag/downloads" target="_blank" rel="noopener">صفحة الإصدار ↗</a>
     </header>
 
     <section class="hero">
-      <div class="eyebrow"><span class="pulse"></span> يرفع إلى إصدار downloads</div>
-      <h1>ارفع ملفك، وخذ رابط التحميل مباشرة</h1>
-      <p>اختر الملفات، ثم ترفع إلى GitHub Release نفسه. بعد اكتمال الرفع ستجد رابط تنزيل مباشر جاهزًا للنسخ والمشاركة.</p>
+      <div class="badge"><span class="badge-dot"></span> متصل بإصدار GitHub: downloads</div>
+      <h1>ارفع ملفاتك، وشاركها <strong>بطريقتك.</strong></h1>
+      <p>واجهة بسيطة لرفع الملفات إلى GitHub وإصدار روابط تنزيل مباشرة، مع إمكانية اختيار اسم الملف عند كل تنزيل.</p>
     </section>
 
-    <section class="grid" aria-label="واجهة رفع الملفات">
-      <section class="card">
-        <div class="card-head">
-          <h2>رفع ملفات جديدة</h2>
-          <p>يمكن اختيار ملف واحد أو أكثر في المرة نفسها.</p>
+    <section class="app-grid" aria-label="مركز رفع الملفات">
+      <section class="card upload-card">
+        <div class="card-title">
+          <div class="title-group"><span class="title-icon" aria-hidden="true">⇧</span><div><h2>رفع ملفات جديدة</h2><p>اسحب الملفات أو اخترها من جهازك.</p></div></div>
+          <span class="target">downloads</span>
         </div>
-        <div class="form-body">
-          <div class="release-pill">
-            <div><strong>المستودع والإصدار المستهدفان</strong><span dir="ltr">jrb3ss0/downloaders · downloads</span></div>
-            <a href="https://github.com/jrb3ss0/downloaders/releases/tag/downloads" target="_blank" rel="noopener">عرض ↗</a>
+
+        <div class="form">
+          <div class="field">
+            <div class="field-heading"><label for="token">رمز GitHub للوصول</label><a class="help-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">إنشاء رمز ↗</a></div>
+            <div class="token-box"><input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_... أو ghp_..."><button id="toggle-token" class="show-token" type="button">إظهار</button></div>
+            <p class="security-line"><span>✓</span> لا يُخزّن الرمز في المتصفح أو في الموقع.</p>
           </div>
 
           <div class="field">
-            <label for="token">رمز الوصول الشخصي من GitHub</label>
-            <div class="input-wrap">
-              <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_... أو ghp_..." aria-describedby="token-hint">
-              <button id="toggle-token" class="show-token" type="button">إظهار</button>
-            </div>
-            <p id="token-hint" class="hint">يُستخدم أثناء الرفع فقط ولا يُخزَّن في الصفحة أو في المتصفح.</p>
-          </div>
-
-          <div class="field">
-            <label for="files">الملفات</label>
+            <div class="field-heading"><label for="files">الملفات</label><span class="field-note">يمكن اختيار أكثر من ملف</span></div>
             <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="اختيار ملفات للرفع">
               <input id="files" type="file" multiple>
-              <div><div class="drop-icon">⇧</div><strong>اسحب الملفات هنا أو اضغط للاختيار</strong><span>أي صيغة ملفات مدعومة من GitHub Releases</span></div>
+              <div><div class="drop-symbol">↑</div><strong>اسحب الملفات هنا أو اضغط للاختيار</strong><small>سيتم رفعها إلى GitHub Release نفسه</small></div>
             </div>
             <ul id="file-list" class="file-list" aria-live="polite"></ul>
           </div>
 
-          <div class="actions">
-            <button id="upload" class="primary" type="button">رفع الملفات وإنشاء الروابط</button>
-            <span id="status" class="status" aria-live="polite"></span>
-          </div>
+          <div class="submit-row"><button id="upload" class="upload-button" type="button"><span>رفع الملفات</span><span aria-hidden="true">←</span></button><span id="status" class="status" aria-live="polite"></span></div>
         </div>
 
-        <div class="results">
-          <div class="results-head"><h3>روابط التحميل</h3><small id="asset-count">جارٍ تحميل الملفات الحالية…</small></div>
+        <div class="assets">
+          <div class="assets-header"><h3>الملفات المتاحة</h3><span id="asset-count" class="asset-count">جارٍ تحميل الملفات…</span></div>
           <div id="asset-list" class="asset-list" aria-live="polite"></div>
-          <p id="result-empty" class="result-empty">لا توجد ملفات مرفوعة بعد.</p>
+          <p id="result-empty" class="empty">لم تُرفع ملفات بعد. ابدأ برفع أول ملف الآن.</p>
         </div>
       </section>
 
-      <aside class="side">
+      <aside class="sidebar">
         <section class="side-card">
-          <h2>قبل أول رفع</h2>
-          <ol class="steps">
-            <li><strong>أنشئ رمز وصول.</strong> اختر مستودع <span dir="ltr">downloaders</span> فقط.</li>
-            <li><strong>امنح صلاحية Contents: Read and write.</strong> هذه هي الصلاحية اللازمة لإضافة ملفات إلى الإصدار.</li>
-            <li><strong>الصق الرمز هنا.</strong> ثم اختر الملفات واضغط زر الرفع.</li>
+          <h2>ابدأ في 3 خطوات</h2>
+          <ol class="step-list">
+            <li><strong>أنشئ رمز وصول محدودًا</strong>اختر مستودع <span dir="ltr">downloaders</span> فقط، ثم فعّل صلاحية Contents.</li>
+            <li><strong>اختر الملفات وارفعها</strong>الصق الرمز واختر الملفات التي تريد نشرها.</li>
+            <li><strong>انسخ الرابط المناسب</strong>استخدم الرابط المباشر أو أنشئ رابطًا باسم تنزيل مخصص.</li>
           </ol>
         </section>
-        <section class="side-card security">
-          <h2>تنبيه أمني</h2>
-          <p>لا تشارك رمز الوصول مع أي شخص. هذه الصفحة لا تحفظ الرمز، لكنه يمنح صلاحية تعديل المستودع المحدد. أنشئ رمزًا محدودًا للمستودع فقط من <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">إعدادات GitHub</a> وألغِه عند عدم الحاجة.</p>
+        <section class="side-card note-card">
+          <span class="mini-label">خصوصية وأمان</span>
+          <h2>رمزك تحت سيطرتك</h2>
+          <p>يُستخدم الرمز فقط لإرسال الملف إلى GitHub. لا يتم حفظه في Cookies أو Local Storage أو داخل المستودع.</p>
         </section>
         <section class="side-card">
-          <h2>عن الروابط</h2>
-          <p class="notice">الروابط المعروضة أدناه هي روابط GitHub المباشرة لأصول الإصدار، وستعمل لأي شخص لأن المستودع عام.</p>
+          <h2>وجهة الملفات</h2>
+          <div class="specs"><div><span>المستودع</span><strong>downloaders</strong></div><div><span>الإصدار</span><strong>downloads</strong></div><div><span>إتاحة التنزيل</span><strong>Public</strong></div></div>
         </section>
       </aside>
     </section>
 
-    <footer>Downloaders · ملفاتك تُرفع إلى <a href="https://github.com/jrb3ss0/downloaders/releases/tag/downloads" target="_blank" rel="noopener">GitHub Releases</a> مباشرة.</footer>
+    <footer>تُرفع الملفات إلى <a href="https://github.com/jrb3ss0/downloaders/releases/tag/downloads" target="_blank" rel="noopener">GitHub Releases</a>، وروابط التنزيل العامة متاحة لأي شخص.</footer>
   </main>
 
   <script>
@@ -278,25 +291,22 @@
         const baseName = dot > 0 ? asset.name.slice(0, dot) : asset.name;
         const extension = dot > 0 ? asset.name.slice(dot) : '';
         return `<article class="asset">
-          <div class="asset-name"><strong title="${escapeHtml(asset.name)}">${escapeHtml(asset.name)}</strong><small>${formatBytes(asset.size)}</small></div>
-          <div class="url-row"><code title="${escapeHtml(url)}">${escapeHtml(url)}</code><button class="copy" type="button" data-copy="${escapeHtml(url)}">نسخ</button></div>
+          <div class="asset-top"><div class="asset-name"><span class="asset-file-icon">⌁</span><strong title="${escapeHtml(asset.name)}">${escapeHtml(asset.name)}</strong></div><span class="asset-size">${formatBytes(asset.size)}</span></div>
+          <div class="direct-link"><code title="${escapeHtml(url)}">${escapeHtml(url)}</code><button class="copy" type="button" data-copy="${escapeHtml(url)}">نسخ</button></div>
           <section class="custom-link">
             <h4>رابط تنزيل باسم مخصص</h4>
             <div class="custom-fields">
               <div><label>اسم الملف عند التنزيل</label><input class="custom-name" type="text" value="${escapeHtml(baseName)}" maxlength="160" aria-label="اسم الملف عند التنزيل"></div>
               <div><label>الامتداد</label><span class="extension">${escapeHtml(extension || 'بدون امتداد')}</span></div>
             </div>
-            <div class="custom-random">
-              <label class="check-label"><input class="random-toggle" type="checkbox"> أضف أرقامًا عشوائية عند كل تنزيل</label>
-              <div><label>عدد الأرقام</label><input class="random-digits" type="number" min="1" max="20" value="5" disabled aria-label="عدد الأرقام العشوائية"></div>
-            </div>
-            <button class="make-link" type="button" data-create-link>إنشاء رابط التنزيل المخصص</button>
-            <div class="custom-output" hidden><p class="custom-description"></p><div class="url-row"><code class="custom-url"></code><button class="copy" type="button" data-copy="">نسخ</button></div></div>
+            <div class="random-controls"><label class="toggle-label"><input class="random-toggle" type="checkbox"> أضف أرقامًا عشوائية</label><div><label>عدد الأرقام</label><input class="random-digits" type="number" min="1" max="20" value="5" disabled aria-label="عدد الأرقام العشوائية"></div></div>
+            <button class="make-link" type="button" data-create-link>إنشاء الرابط المخصص</button>
+            <div class="custom-output" hidden><p class="custom-description"></p><div class="direct-link"><code class="custom-url"></code><button class="copy" type="button" data-copy="">نسخ</button></div></div>
           </section>
         </article>`;
       }).join('');
       resultEmpty.hidden = assets.length > 0;
-      assetCount.textContent = assets.length ? `${assets.length} ملف${assets.length === 1 ? '' : 'ات'} في الإصدار` : 'لا توجد ملفات بعد';
+      assetCount.textContent = assets.length ? `${assets.length} ملف${assets.length === 1 ? '' : 'ات'} متاحة` : 'لا توجد ملفات بعد';
     }
 
     async function getJson(response) {
@@ -319,7 +329,7 @@
         release = await getRelease();
         renderAssets(release.assets || []);
       } catch (error) {
-        assetCount.textContent = 'تعذر تحميل قائمة الملفات';
+        assetCount.textContent = 'تعذر تحميل الملفات';
         resultEmpty.textContent = error.message;
       }
     }
@@ -347,7 +357,7 @@
 
     function setBusy(isBusy) {
       uploadButton.disabled = isBusy;
-      uploadButton.textContent = isBusy ? 'جارٍ الرفع…' : 'رفع الملفات وإنشاء الروابط';
+      uploadButton.innerHTML = isBusy ? '<span>جارٍ الرفع…</span>' : '<span>رفع الملفات</span><span aria-hidden="true">←</span>';
     }
 
     function createCustomDownloadLink(button) {
@@ -373,8 +383,8 @@
       urlField.title = customUrl.toString();
       copyButton.dataset.copy = customUrl.toString();
       output.querySelector('.custom-description').textContent = addRandom
-        ? `عند كل زيارة للرابط، سيتم تنزيل الملف باسم ${baseName} ثم ${digits} أرقام عشوائية${extension === 'بدون امتداد' ? '' : ` ثم ${extension}`}.`
-        : `سيتم تنزيل الملف باسم ${baseName}${extension === 'بدون امتداد' ? '' : extension}.`;
+        ? `سيكون الاسم ${baseName} متبوعًا بـ ${digits} أرقام عشوائية في كل تنزيل${extension === 'بدون امتداد' ? '' : ` ثم ${extension}`}.`
+        : `سيتم التنزيل باسم ${baseName}${extension === 'بدون امتداد' ? '' : extension}.`;
       output.hidden = false;
     }
 
@@ -384,7 +394,7 @@
       if (!selectedFiles.length) return setStatus('اختر ملفًا واحدًا على الأقل.', 'error');
 
       setBusy(true);
-      setStatus('جارٍ تجهيز الاتصال…');
+      setStatus('جارٍ تجهيز عملية الرفع…');
       try {
         release = await getRelease(token);
         const uploaded = [];
@@ -396,7 +406,7 @@
         selectedFiles = [];
         filesInput.value = '';
         renderSelectedFiles();
-        setStatus(`تم رفع ${uploaded.length} ملف${uploaded.length === 1 ? '' : 'ات'} وإنشاء روابط التنزيل.`, 'success');
+        setStatus(`تم رفع ${uploaded.length} ملف${uploaded.length === 1 ? '' : 'ات'} بنجاح.`, 'success');
       } catch (error) {
         setStatus(error.message || 'حدث خطأ غير متوقع أثناء الرفع.', 'error');
       } finally {
@@ -441,10 +451,7 @@
     });
     assetList.addEventListener('click', async event => {
       const createButton = event.target.closest('[data-create-link]');
-      if (createButton) {
-        createCustomDownloadLink(createButton);
-        return;
-      }
+      if (createButton) { createCustomDownloadLink(createButton); return; }
       const button = event.target.closest('[data-copy]');
       if (!button) return;
       const url = button.dataset.copy;
