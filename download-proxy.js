@@ -36,6 +36,16 @@ function suffix(length) {
   return Array.from(bytes, value => String(value % 10)).join('');
 }
 
+function insertDigits(fileName, digits, position, requestedIndex) {
+  if (!digits) return fileName;
+  if (position === 'start') return digits + fileName;
+  if (position === 'at') {
+    const index = Number.isFinite(requestedIndex) ? Math.min(Math.max(requestedIndex, 0), fileName.length) : fileName.length;
+    return fileName.slice(0, index) + digits + fileName.slice(index);
+  }
+  return fileName + digits;
+}
+
 async function uploadAsset(request, url) {
   const fileName = url.searchParams.get('name') || '';
   const authorization = request.headers.get('Authorization') || '';
@@ -66,7 +76,9 @@ async function downloadAsset(request, url) {
   const digits = Number.isFinite(requestedDigits) ? Math.min(Math.max(requestedDigits, 0), 20) : 0;
   const extension = extensionOf(asset);
   const fallback = asset.slice(0, asset.length - extension.length) || 'download';
-  const downloadName = safeName(url.searchParams.get('name'), fallback) + suffix(digits) + extension;
+  const requestedIndex = Number.parseInt(url.searchParams.get('index') || '', 10);
+  const baseName = safeName(url.searchParams.get('name'), fallback);
+  const downloadName = insertDigits(baseName, suffix(digits), url.searchParams.get('position') || 'end', requestedIndex) + extension;
   const upstream = await fetch(SOURCE + encodeURIComponent(asset), { method: request.method, redirect: 'follow' });
 
   if (!upstream.ok) return new Response('The requested release asset was not found.', { status: upstream.status });

@@ -31,6 +31,7 @@
     .asset-list { display:grid; gap:9px; margin-top:14px; } .asset { overflow:hidden; border:1px solid #293951; border-radius:12px; background:#0b1321; } .asset-main { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px; } .asset-info { display:flex; align-items:center; min-width:0; gap:9px; } .file-icon { display:grid; place-items:center; width:30px; height:30px; flex:0 0 auto; border-radius:9px; color:#9abbff; background:#182947; font-size:14px; } .asset-name { overflow:hidden; font-size:12px; font-weight:700; text-overflow:ellipsis; white-space:nowrap; } .asset-size { flex:0 0 auto; color:#8192ad; direction:ltr; font-size:10px; }
     .link-list { display:grid; gap:7px; margin:0; padding:0 13px 13px; list-style:none; } .link-item { display:flex; align-items:center; gap:8px; padding:8px; border:1px solid #23334d; border-radius:8px; background:#09111e; } .type { flex:0 0 auto; width:47px; color:#7799cf; font-size:9px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; } code { flex:1; min-width:0; overflow:hidden; color:#a9c4f7; direction:ltr; font:10px ui-monospace,SFMono-Regular,Menlo,monospace; text-overflow:ellipsis; white-space:nowrap; } .copy { flex:0 0 auto; height:29px; border:1px solid #36517a; border-radius:6px; color:#a9c4f7; background:#13223a; cursor:pointer; padding:0 8px; font-size:10px; font-weight:700; } .copy:hover { border-color:#779fff; color:#fff; }
     .custom { margin:0 13px 13px; padding:12px; border:1px solid rgba(104,146,224,.25); border-radius:10px; background:linear-gradient(135deg,rgba(40,66,111,.34),rgba(27,35,62,.34)); } .custom h4 { margin:0 0 10px; color:#bdd0f8; font-size:11px; } .custom-grid { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:end; } .custom label,.random label { display:block; margin-bottom:4px; color:#859ab9; font-size:9px; } .custom input[type="text"],.custom input[type="number"] { height:35px; padding:0 8px; border-color:#364b6c; border-radius:7px; background:#09111e; font-size:11px; } .custom input[type="number"] { width:59px; direction:ltr; } .extension { display:block; max-width:100px; overflow:hidden; padding:8px 0; color:#9bb7e5; direction:ltr; font:10px ui-monospace,SFMono-Regular,Menlo,monospace; text-overflow:ellipsis; white-space:nowrap; } .random { display:flex; align-items:end; justify-content:space-between; gap:9px; margin-top:9px; } .toggle { display:flex!important; align-items:center; gap:6px; margin:0!important; color:#a9bad3!important; font-size:10px!important; cursor:pointer; } .toggle input { accent-color:#6f9eff; } .generate { min-height:34px; margin-top:10px; border:1px solid #5276b4; border-radius:7px; color:#d7e5ff; background:#1b3157; cursor:pointer; padding:0 10px; font-size:10px; font-weight:700; } .generate:hover { background:#294778; } .custom-output { margin-top:10px; } .custom-output p { margin:0 0 6px; color:#78d7af; font-size:9px; }
+    .position { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:end; margin-top:9px; } .position select { width:100%; height:35px; border:1px solid #364b6c; border-radius:7px; outline:0; color:#d7e5ff; background:#09111e; padding:0 8px; font-size:10px; } .position select:focus { border-color:#689dff; box-shadow:0 0 0 3px rgba(87,148,255,.11); } .custom .index-wrap[hidden] { display:none; } .custom .index-wrap input { width:72px; }
     .side { display:grid; gap:15px; } .side-card { padding:20px; border:1px solid var(--line); border-radius:18px; background:rgba(16,24,39,.8); } .side-card h2 { margin:0 0 13px; font-size:14px; } .steps { display:grid; gap:14px; margin:0; padding:0; list-style:none; counter-reset:step; } .steps li { position:relative; padding-left:34px; color:#8da0bb; font-size:11px; counter-increment:step; } .steps li::before { content:counter(step); position:absolute; top:0; left:0; display:grid; place-items:center; width:23px; height:23px; border:1px solid #314662; border-radius:7px; color:#a3c1ff; background:#14233a; font-size:10px; font-weight:800; } .steps strong { display:block; margin-bottom:1px; color:#d7e2f5; font-size:11px; } .secure { border-color:rgba(51,209,157,.21); background:linear-gradient(135deg,rgba(20,72,62,.44),rgba(16,24,39,.9)); } .secure h2 { color:#a2f0d1; } .secure p { margin:0; color:#97c9b6; font-size:11px; line-height:1.7; } .details { display:grid; gap:9px; margin:0; } .details div { display:flex; justify-content:space-between; gap:10px; padding-bottom:9px; border-bottom:1px solid #24324a; color:#8da0bb; font-size:10px; } .details div:last-child { padding-bottom:0; border:0; } .details strong { color:#c2d2ec; direction:ltr; font-weight:700; }
     footer { padding:0 0 30px; color:#71829c; text-align:center; font-size:10px; } footer a { color:#9ebcff; text-decoration:none; }
     @media(max-width:860px){.grid{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}.side-card:first-child{grid-row:span 2}} @media(max-width:560px){.shell{width:min(100% - 22px,1160px)}.nav{padding:16px 0}.release{font-size:0;width:40px;justify-content:center;padding:0}.release::after{content:'↗';font-size:16px}.hero{padding:30px 0}.head,.form,.assets{padding-left:16px;padding-right:16px}.pill{display:none}.submit{align-items:stretch;flex-direction:column}.upload-btn{width:100%}.side{grid-template-columns:1fr}.side-card:first-child{grid-row:auto}}
@@ -68,7 +69,28 @@
     function setStatus(message='',type=''){status.textContent=message;status.className=`status ${type}`}
     function renderSelectedFiles(){fileList.innerHTML=selectedFiles.map((f,i)=>`<li data-file-index="${i}"><div class="queue-top"><span class="queue-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><span class="queue-size">${formatBytes(f.size)}</span></div><div class="queue-state">Queued</div><div class="track"><i class="bar"></i></div></li>`).join('')}
     function setFileProgress(index,percent,message,state=''){const row=fileList.querySelector(`[data-file-index="${index}"]`);if(!row)return;row.querySelector('.bar').style.width=`${percent}%`;row.querySelector('.queue-state').textContent=message;if(state)row.querySelector('.bar').className=`bar ${state}`}
-    function renderAssets(assets){assetList.innerHTML=assets.map(asset=>{const url=asset.browser_download_url,dot=asset.name.lastIndexOf('.'),base=dot>0?asset.name.slice(0,dot):asset.name,ext=dot>0?asset.name.slice(dot):'';return`<article class="asset"><div class="asset-main"><div class="asset-info"><span class="file-icon">⌁</span><span class="asset-name" title="${escapeHtml(asset.name)}">${escapeHtml(asset.name)}</span></div><span class="asset-size">${formatBytes(asset.size)}</span></div><ul class="link-list"><li class="link-item"><span class="type">Direct</span><code title="${escapeHtml(url)}">${escapeHtml(url)}</code><button class="copy" type="button" data-copy="${escapeHtml(url)}">Copy</button></li></ul><section class="custom"><h4>Custom filename link</h4><div class="custom-grid"><div><label>Filename</label><input class="custom-name" type="text" value="${escapeHtml(base)}" maxlength="160"></div><div><label>Extension</label><span class="extension">${escapeHtml(ext||'No extension')}</span></div></div><div class="random"><label class="toggle"><input class="random-toggle" type="checkbox"> Add random digits per download</label><div><label>Digits</label><input class="random-digits" type="number" min="1" max="20" value="5" disabled></div></div><button class="generate" type="button" data-create-link>Generate custom link</button><div class="custom-output" hidden><p class="custom-description"></p><div class="link-item"><span class="type">Custom</span><code class="custom-url"></code><button class="copy" type="button" data-copy="">Copy</button></div></div></section></article>`}).join('');resultEmpty.hidden=assets.length>0;assetCount.textContent=assets.length?`${assets.length} file${assets.length===1?'':'s'} available`:'No files yet'}
+    function renderAssets(assets) {
+      assetList.innerHTML = assets.map(asset => {
+        const url = asset.browser_download_url;
+        const dot = asset.name.lastIndexOf('.');
+        const base = dot > 0 ? asset.name.slice(0, dot) : asset.name;
+        const ext = dot > 0 ? asset.name.slice(dot) : '';
+        return `<article class="asset">
+          <div class="asset-main"><div class="asset-info"><span class="file-icon">⌁</span><span class="asset-name" title="${escapeHtml(asset.name)}">${escapeHtml(asset.name)}</span></div><span class="asset-size">${formatBytes(asset.size)}</span></div>
+          <ul class="link-list"><li class="link-item"><span class="type">Direct</span><code title="${escapeHtml(url)}">${escapeHtml(url)}</code><button class="copy" type="button" data-copy="${escapeHtml(url)}">Copy</button></li></ul>
+          <section class="custom">
+            <h4>Custom filename link</h4>
+            <div class="custom-grid"><div><label>Filename</label><input class="custom-name" type="text" value="${escapeHtml(base)}" maxlength="160"></div><div><label>Extension</label><span class="extension">${escapeHtml(ext || 'No extension')}</span></div></div>
+            <div class="random"><label class="toggle"><input class="random-toggle" type="checkbox"> Add random digits per download</label><div><label>Digits</label><input class="random-digits" type="number" min="1" max="20" value="5" disabled></div></div>
+            <div class="position"><div><label>Place digits</label><select class="digit-position" disabled><option value="end">At the end of the filename</option><option value="start">At the start of the filename</option><option value="at">After a specific character</option></select></div><div class="index-wrap" hidden><label>After character</label><input class="digit-index" type="number" min="0" value="0" disabled></div></div>
+            <button class="generate" type="button" data-create-link>Generate custom link</button>
+            <div class="custom-output" hidden><p class="custom-description"></p><div class="link-item"><span class="type">Custom</span><code class="custom-url"></code><button class="copy" type="button" data-copy="">Copy</button></div></div>
+          </section>
+        </article>`;
+      }).join('');
+      resultEmpty.hidden = assets.length > 0;
+      assetCount.textContent = assets.length ? `${assets.length} file${assets.length === 1 ? '' : 's'} available` : 'No files yet';
+    }
     async function getJson(response){return(response.headers.get('content-type')||'').includes('application/json')?response.json():null}
     async function getRelease(token=''){const headers={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};if(token)headers.Authorization=`Bearer ${token}`;const response=await fetch(`${API_BASE}/releases/tags/${TAG}`,{headers}),data=await getJson(response);if(!response.ok)throw new Error(data?.message||`Could not access the release (HTTP ${response.status}).`);return data}
     async function loadAssets(){try{release=await getRelease();renderAssets(release.assets||[])}catch(error){assetCount.textContent='Could not load files';resultEmpty.textContent=error.message}}
@@ -107,12 +129,85 @@
       });
     }
     function setBusy(busy){uploadButton.disabled=busy;uploadButton.innerHTML=busy?'<span>Uploading…</span>':'<span>Upload files</span><span>→</span>'}
-    function makeCustomLink(button){const asset=button.closest('.asset'),assetName=asset.querySelector('.asset-name').textContent,extension=asset.querySelector('.extension').textContent,defaultBase=extension==='No extension'?assetName:assetName.slice(0,-extension.length),base=asset.querySelector('.custom-name').value.trim()||defaultBase,random=asset.querySelector('.random-toggle').checked,digitsInput=asset.querySelector('.random-digits'),digits=Math.min(20,Math.max(1,parseInt(digitsInput.value,10)||5)),url=new URL(PROXY_BASE);digitsInput.value=digits;url.searchParams.set('asset',assetName);url.searchParams.set('name',base);if(random)url.searchParams.set('digits',digits);const output=asset.querySelector('.custom-output'),code=output.querySelector('.custom-url'),copy=output.querySelector('[data-copy]');code.textContent=url.toString();code.title=url.toString();copy.dataset.copy=url.toString();output.querySelector('.custom-description').textContent=random?`Downloads as ${base} + ${digits} new random digits${extension==='No extension'?'':` + ${extension}`} on every visit.`:`Downloads as ${base}${extension==='No extension'?'':extension}.`;output.hidden=false}
+    function updateDigitPosition(asset) {
+      const enabled = asset.querySelector('.random-toggle').checked;
+      const position = asset.querySelector('.digit-position');
+      const indexWrap = asset.querySelector('.index-wrap');
+      const indexInput = asset.querySelector('.digit-index');
+      asset.querySelector('.random-digits').disabled = !enabled;
+      position.disabled = !enabled;
+      const useIndex = enabled && position.value === 'at';
+      indexWrap.hidden = !useIndex;
+      indexInput.disabled = !useIndex;
+      const nameLength = asset.querySelector('.custom-name').value.length;
+      indexInput.max = nameLength;
+      if (Number(indexInput.value) > nameLength) indexInput.value = nameLength;
+    }
+
+    function makeCustomLink(button) {
+      const asset = button.closest('.asset');
+      const assetName = asset.querySelector('.asset-name').textContent;
+      const extension = asset.querySelector('.extension').textContent;
+      const defaultBase = extension === 'No extension' ? assetName : assetName.slice(0, -extension.length);
+      const base = asset.querySelector('.custom-name').value.trim() || defaultBase;
+      const random = asset.querySelector('.random-toggle').checked;
+      const digitsInput = asset.querySelector('.random-digits');
+      const digits = Math.min(20, Math.max(1, parseInt(digitsInput.value, 10) || 5));
+      const position = asset.querySelector('.digit-position').value;
+      const indexInput = asset.querySelector('.digit-index');
+      const insertionIndex = Math.min(base.length, Math.max(0, parseInt(indexInput.value, 10) || 0));
+      const url = new URL(PROXY_BASE);
+      digitsInput.value = digits;
+      indexInput.value = insertionIndex;
+      url.searchParams.set('asset', assetName);
+      url.searchParams.set('name', base);
+      if (random) {
+        url.searchParams.set('digits', digits);
+        url.searchParams.set('position', position);
+        if (position === 'at') url.searchParams.set('index', insertionIndex);
+      }
+
+      const output = asset.querySelector('.custom-output');
+      const code = output.querySelector('.custom-url');
+      const copy = output.querySelector('[data-copy]');
+      code.textContent = url.toString();
+      code.title = url.toString();
+      copy.dataset.copy = url.toString();
+      const extensionText = extension === 'No extension' ? '' : extension;
+      const marker = `[${digits} random digits]`;
+      let preview = `${base}${extensionText}`;
+      if (random) {
+        preview = position === 'start' ? `${marker}${base}${extensionText}` : position === 'at' ? `${base.slice(0, insertionIndex)}${marker}${base.slice(insertionIndex)}${extensionText}` : `${base}${marker}${extensionText}`;
+      }
+      output.querySelector('.custom-description').textContent = random ? `Preview: ${preview}. Fresh digits are generated on every download.` : `Downloads as ${preview}.`;
+      output.hidden = false;
+    }
     async function uploadFiles(){const token=tokenInput.value.trim();if(!token)return setStatus('Enter your GitHub token first.','error');if(!selectedFiles.length)return setStatus('Choose at least one file.','error');setBusy(true);try{release=await getRelease(token);const uploaded=[];for(let i=0;i<selectedFiles.length;i++)uploaded.push(await uploadOne(selectedFiles[i],token,i,selectedFiles.length));release.assets=[...uploaded,...(release.assets||[])];renderAssets(release.assets);setStatus(`${uploaded.length} file${uploaded.length===1?'':'s'} uploaded successfully.`,'success')}catch(error){setStatus(error.message||'An unexpected upload error occurred.','error')}finally{setBusy(false)}}
     document.querySelector('#toggle-token').addEventListener('click',e=>{const visible=tokenInput.type==='password';tokenInput.type=visible?'text':'password';e.currentTarget.textContent=visible?'Hide':'Show'});
     filesInput.addEventListener('change',()=>{selectedFiles=Array.from(filesInput.files||[]);renderSelectedFiles();setStatus()});
     ['dragenter','dragover'].forEach(name=>dropZone.addEventListener(name,e=>{e.preventDefault();dropZone.classList.add('drag')}));['dragleave','drop'].forEach(name=>dropZone.addEventListener(name,e=>{e.preventDefault();dropZone.classList.remove('drag')}));dropZone.addEventListener('drop',e=>{selectedFiles=Array.from(e.dataTransfer.files||[]);renderSelectedFiles();setStatus()});dropZone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();filesInput.click()}});
-    uploadButton.addEventListener('click',uploadFiles);assetList.addEventListener('change',e=>{if(e.target.matches('.random-toggle'))e.target.closest('.asset').querySelector('.random-digits').disabled=!e.target.checked});assetList.addEventListener('click',async e=>{const make=e.target.closest('[data-create-link]');if(make){makeCustomLink(make);return}const button=e.target.closest('[data-copy]');if(!button)return;try{await navigator.clipboard.writeText(button.dataset.copy);const old=button.textContent;button.textContent='Copied';setTimeout(()=>button.textContent=old,1200)}catch{setStatus('Could not copy automatically.','error')}});loadAssets();
+    uploadButton.addEventListener('click', uploadFiles);
+    assetList.addEventListener('change', event => {
+      if (event.target.matches('.random-toggle, .digit-position, .digit-index')) updateDigitPosition(event.target.closest('.asset'));
+    });
+    assetList.addEventListener('input', event => {
+      if (event.target.matches('.custom-name')) updateDigitPosition(event.target.closest('.asset'));
+    });
+    assetList.addEventListener('click', async event => {
+      const make = event.target.closest('[data-create-link]');
+      if (make) { makeCustomLink(make); return; }
+      const button = event.target.closest('[data-copy]');
+      if (!button) return;
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy);
+        const old = button.textContent;
+        button.textContent = 'Copied';
+        setTimeout(() => button.textContent = old, 1200);
+      } catch {
+        setStatus('Could not copy automatically.', 'error');
+      }
+    });
+    loadAssets();
   </script>
 </body>
 </html>
