@@ -46,6 +46,10 @@ function insertDigits(fileName, digits, position, requestedIndex) {
   return fileName + digits;
 }
 
+function replaceNumberTags(fileName) {
+  return fileName.replace(/#num([1-9]|1[0-9]|20)#/gi, (match, length) => suffix(Number.parseInt(length, 10)));
+}
+
 async function uploadAsset(request, url) {
   const fileName = url.searchParams.get('name') || '';
   const authorization = request.headers.get('Authorization') || '';
@@ -78,7 +82,9 @@ async function downloadAsset(request, url) {
   const fallback = asset.slice(0, asset.length - extension.length) || 'download';
   const requestedIndex = Number.parseInt(url.searchParams.get('index') || '', 10);
   const baseName = safeName(url.searchParams.get('name'), fallback);
-  const downloadName = insertDigits(baseName, suffix(digits), url.searchParams.get('position') || 'end', requestedIndex) + extension;
+  const hasNumberTag = /#num([1-9]|1[0-9]|20)#/i.test(baseName);
+  const downloadBaseName = hasNumberTag ? replaceNumberTags(baseName) : insertDigits(baseName, suffix(digits), url.searchParams.get('position') || 'end', requestedIndex);
+  const downloadName = downloadBaseName + extension;
   const upstream = await fetch(SOURCE + encodeURIComponent(asset), { method: request.method, redirect: 'follow' });
 
   if (!upstream.ok) return new Response('The requested release asset was not found.', { status: upstream.status });
